@@ -1,7 +1,10 @@
 function main() {
-    $('#nav-view-submit').click(() => {
-        location = '/link/' + encodeURI($('#nav-view-short-code-input').val());
+    const searchSubmitButton = document.querySelector('#nav-view-submit');
+    const searchShortcodeInput = document.querySelector('#nav-view-short-code-input');
+
+    searchSubmitButton.addEventListener('click', () => {
+        window.location = '/link/' + encodeURI(searchShortcodeInput.value);
     });
 }
 
-$(main);
+document.addEventListener('DOMContentLoaded', main);
