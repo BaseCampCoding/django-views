@@ -12,12 +12,12 @@ python3 manage.py runserver
 
 Expected paths:
 
--   A path named 'create' at the root (an empty pattern), that dispatches your
-    short link creation view.
--   A path named 'link' at 'link/\<short_code\>/' that dispatches to your short
-    link show view.
--   A path named 'goto' at '\<short_code\>/' that dispatches to your short link
-    goto view.
+- A path named 'create' at the root (an empty pattern), that dispatches your
+  short link creation view.
+- A path named 'show' at 'link/\<short_code\>/' that dispatches to your short
+  link show view.
+- A path named 'goto' at '\<short_code\>/' that dispatches to your short link
+  goto view.
 
 Url patterns example:
 https://docs.djangoproject.com/en/2.0/topics/http/urls/#example
@@ -28,16 +28,16 @@ HTTP Methods: GET, POST
 
 Django Requests:
 
--   `request.method` is a `str` that tells you the HTTP method of the request
--   `request.GET` is a `dict` that gives you the GET form data.
--   `request.POST` is a `dict` that gives you the POST form data.
+- `request.method` is a `str` that tells you the HTTP method of the request
+- `request.GET` is a `dict` that gives you the GET form data.
+- `request.POST` is a `dict` that gives you the POST form data.
 
 Django Responses:
 
 1.  `render(request, template_path, context)`
-    -   `request` is the request
-    -   `template_path` is a path (string) into the `./templates` folder.
-    -   `context` is a dictionary of data for the template to use
+    - `request` is the request
+    - `template_path` is a path (string) into the `./templates` folder.
+    - `context` is a dictionary of data for the template to use
 2.  `redirect(url)` or `redirect(path_name, **kwargs)`
 
 ## Reading from the Database
@@ -48,8 +48,8 @@ I've written the database layer for you.
 
 Every `Link` has an `.original` and a `.short_code` property.
 
--   `.original` is the original link
--   `.short_code` is the new short code that the user will provide.
+- `.original` is the original link
+- `.short_code` is the new short code that the user will provide.
 
 `Link.shorten(url)` is essentially your constructor function. Use it to create a
 new short link. If it is given an invalid url, `None` is returned.
@@ -71,6 +71,24 @@ There are two templates for you to use: `app/create.html` and `app/show.html`.
 # You will know you are done when...
 
 1.  You can create a new short link.
+    - The root (`/`) should resolve to `app:create`.
+    - `GET` to `app:create` should render `app/create.html`
+    - `POST` to `app:create` with a valid url should:
+      - Create a new `Link`
+      - Redirect to `app:show` for the newly created `Link`
+    - `POST` to `app:create` with an invalid url should:
+      - Render `app/create.html`
+      - The context should contain `invalid_url` with `True`.
+      - The response status code should be `422`.
 2.  View the original url from that short link.
+    - `/link/5` should resolve to `app:show` with `short_code` as `5`
+    - `GET` to `app:show` should
+      - Render `app/show.html`
+      - The context should contain `link` as the short code's link.
+      - If the the short code does not have a link, the context should
+        have `link` with the value `None`
 3.  Use the service to go to the original url when given a short link.
+    - `5/` should resolve to `app:goto` with `short_code` as `5`
+    - If `short_code` has a `Link` redirect to that link's original url.
+    - If `short_code` doesn't have a `Link` redirect to `app:create`
 4.  **You pass all the tests**
